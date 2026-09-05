@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: pulselake-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: pulsemart
+      POSTGRES_USER: pulselake
+      POSTGRES_PASSWORD: pulselake_local
+
+    ports:
+      - "55432:5432"
+
+    volumes:
+      - pulselake_postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulselake -d pulsemart"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pulselake_postgres_data:
